@@ -12,6 +12,9 @@ cmake_minimum_required(VERSION 3.13)
 # Compiler Optimization
 add_compile_options(-Ofast -mcpu=cortex-m33 -mfpu=fpv5-sp-d16 -Wall -flto)
 
+# Keep the RP2350 QMI flash clock at clk_sys / 3 from boot stage 2 onward.
+add_compile_definitions(PICO_FLASH_SPI_CLKDIV=3)
+
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)

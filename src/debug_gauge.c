@@ -16,6 +16,8 @@
 
 #include <string.h>
 #include "pico/stdlib.h"
+#include "hardware/clocks.h"
+#include "hardware/structs/qmi.h"
 #include "hardware/spi.h"
 #include "common.h"
 #include "transmit_to_dac.h"
@@ -35,14 +37,16 @@
 #define G_TEXT_Y 221
 #define G_FRAME_X 36
 #define G_FRAME_Y 218
-#define G_FRAME_W 188
+#define G_FRAME_W 94
 #define G_FRAME_H 14
 #define G_IN_X (G_FRAME_X + 1)
 #define G_IN_Y (G_FRAME_Y + 1)
-#define G_IN_W (G_FRAME_W - 2) // 186 px = 0 .. SIZE_UPSAMPLE_CORE0 (about 44 samples / px)
+#define G_IN_W (G_FRAME_W - 2)
 #define G_IN_H (G_FRAME_H - 2)
-#define G_PCT_X 230
-#define G_STATE_X 274
+#define G_PCT_X 136
+#define G_DIV_X 184
+#define G_CLOCK_X 208
+#define G_STATE_X 256
 
 #define G_UPDATE_US 200000u // 5 Hz
 #define G_EMA_TAU_S 0.25f
@@ -277,6 +281,8 @@ static uint32_t last_sample_us = 0, last_update_us = 0;
 static int shown_fill = -1;
 static uint16_t shown_color = 0;
 static char shown_pct[6] = "     ";
+static char shown_div[3] = "  ";
+static char shown_clock[5] = "    ";
 static char shown_state[5] = "    ";
 static uint16_t shown_state_color = 0;
 
@@ -346,6 +352,8 @@ void debug_gauge_init(void)
 	shown_fill = 0;
 	shown_color = C_BG;
 	memcpy(shown_pct, "     ", 6);
+	memcpy(shown_div, "  ", 3);
+	memcpy(shown_clock, "    ", 5);
 	memcpy(shown_state, "    ", 5);
 	shown_state_color = 0;
 	last_sample_us = time_us_32();
@@ -389,15 +397,14 @@ static void refresh(float level, usb_audio_state_t st)
 		shown_fill = fill;
 	}
 
-	// --- percentage with one decimal (1 % = 82 samples, 0.1 % = 8 samples) ---
+	// Buffer percentage, QMI divider, and derived flash clock share this row.
 	float pct = level * 100.0f / (float)SIZE_UPSAMPLE_CORE0;
 	if (pct > 99.9f)
 		pct = 99.9f;
 	if (pct < 0.0f)
 		pct = 0.0f;
-	// "%4.1f%%" without printf (always 5 chars, e.g. "50.1%" / " 5.1%")
 	char pct_text[6];
-	const int tenths = (int)(pct * 10.0f + 0.5f); // 0 .. 999
+	const int tenths = (int)(pct * 10.0f + 0.5f);
 	pct_text[0] = (tenths >= 100) ? (char)('0' + tenths / 100) : ' ';
 	pct_text[1] = (char)('0' + (tenths / 10) % 10);
 	pct_text[2] = '.';
@@ -409,6 +416,28 @@ static void refresh(float level, usb_audio_state_t st)
 		{
 			q_char(G_PCT_X + 8 * i, G_TEXT_Y, pct_text[i], C_LABEL);
 			shown_pct[i] = pct_text[i];
+		}
+
+	uint32_t flash_div = (qmi_hw->m[0].timing & QMI_M0_TIMING_CLKDIV_BITS) >> QMI_M0_TIMING_CLKDIV_LSB;
+	if (flash_div == 0)
+		flash_div = 256;
+	const uint32_t flash_mhz = clock_get_hz(clk_sys) / flash_div / 1000000u;
+	char div_text[3] = {'D', flash_div <= 9 ? (char)('0' + flash_div) : '?', '\0'};
+	for (int i = 0; i < 2; i++)
+		if (div_text[i] != shown_div[i])
+		{
+			q_char(G_DIV_X + 8 * i, G_TEXT_Y, div_text[i], C_LABEL);
+			shown_div[i] = div_text[i];
+		}
+	char clock_text[5] = {
+		flash_mhz >= 100 ? (char)('0' + (flash_mhz / 100) % 10) : ' ',
+		(char)('0' + (flash_mhz / 10) % 10),
+		(char)('0' + flash_mhz % 10), 'M', '\0'};
+	for (int i = 0; i < 4; i++)
+		if (clock_text[i] != shown_clock[i])
+		{
+			q_char(G_CLOCK_X + 8 * i, G_TEXT_Y, clock_text[i], C_LABEL);
+			shown_clock[i] = clock_text[i];
 		}
 
 	// --- state code (colored like the bar) ---

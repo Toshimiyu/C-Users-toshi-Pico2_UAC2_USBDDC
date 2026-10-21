@@ -62,6 +62,9 @@ add_executable(Pico2_UAC2_USBDDC_VerFinal_11FFT_NoOverSampling
         ${TUSB_SRC}
 )
 
+# 起動時にプログラムをSRAMへコピーして実行する（RP2350）
+pico_set_binary_type(Pico2_UAC2_USBDDC_VerFinal_11FFT_NoOverSampling copy_to_ram)
+
 pico_set_program_name(Pico2_UAC2_USBDDC_VerFinal_11FFT_NoOverSampling "Pico2_UAC2_USBDDC_VerFinal_11FFT_NoOverSampling")
 pico_set_program_version(Pico2_UAC2_USBDDC_VerFinal_11FFT_NoOverSampling "0.1")
 
