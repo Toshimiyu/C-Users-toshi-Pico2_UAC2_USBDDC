@@ -47,7 +47,7 @@ endif()
 include(pico_sdk_import.cmake)
 # include(example_auto_set_url.cmake)
 
-project(Pico2_UAC2_USBDDC C CXX ASM)
+project(Pico2_UAC2_USBDDC_VerFinal_11FFT_NoOverSampling C CXX ASM)
 
 # Use bundled pico‑extras from the repository
 # add_subdirectory(pico-extras)
@@ -62,7 +62,7 @@ add_subdirectory(src)
 
 # Compile Definitions
 # (pico-extras usb_device / LUFA 用の PICO_USBDEV_* 定義は TinyUSB 移行により不要)
-target_compile_definitions(Pico2_UAC2_USBDDC PRIVATE
+target_compile_definitions(Pico2_UAC2_USBDDC_VerFinal_11FFT_NoOverSampling PRIVATE
     AUDIO_FREQ_MAX=192000
 
     # USB bring-up level: 0 = USB off (original boot flow only) / 1 = TinyUSB enumeration only / 2 = full

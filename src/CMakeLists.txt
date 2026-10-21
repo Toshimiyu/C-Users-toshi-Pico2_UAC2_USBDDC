@@ -37,7 +37,7 @@ ${CMAKE_CURRENT_SOURCE_DIR}/../tinyusb/src/class/audio/audio_device.c
 )
 
 # Add executable. Default name is the project name, version 0.1
-add_executable(Pico2_UAC2_USBDDC
+add_executable(Pico2_UAC2_USBDDC_VerFinal_11FFT_NoOverSampling
         main.c
         general_func.c
         usb_device_control.c
@@ -62,18 +62,18 @@ add_executable(Pico2_UAC2_USBDDC
         ${TUSB_SRC}
 )
 
-pico_set_program_name(Pico2_UAC2_USBDDC "Pico2_UAC2_USBDDC")
-pico_set_program_version(Pico2_UAC2_USBDDC "0.1")
+pico_set_program_name(Pico2_UAC2_USBDDC_VerFinal_11FFT_NoOverSampling "Pico2_UAC2_USBDDC_VerFinal_11FFT_NoOverSampling")
+pico_set_program_version(Pico2_UAC2_USBDDC_VerFinal_11FFT_NoOverSampling "0.1")
 
 # Generate PIO header
-pico_generate_pio_header(Pico2_UAC2_USBDDC ${CMAKE_CURRENT_LIST_DIR}/i2s.pio)
+pico_generate_pio_header(Pico2_UAC2_USBDDC_VerFinal_11FFT_NoOverSampling ${CMAKE_CURRENT_LIST_DIR}/i2s.pio)
 
 # Add the standard library to the build
-target_link_libraries(Pico2_UAC2_USBDDC
+target_link_libraries(Pico2_UAC2_USBDDC_VerFinal_11FFT_NoOverSampling
         pico_stdlib)
 
 # Add the standard include files to the build
-target_include_directories(Pico2_UAC2_USBDDC PRIVATE
+target_include_directories(Pico2_UAC2_USBDDC_VerFinal_11FFT_NoOverSampling PRIVATE
         ${CMAKE_CURRENT_LIST_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}/../pico-extras
         ${CMAKE_CURRENT_SOURCE_DIR}/..
@@ -86,7 +86,7 @@ target_include_directories(Pico2_UAC2_USBDDC PRIVATE
         )
 
 # Add any user requested libraries
-target_link_libraries(Pico2_UAC2_USBDDC 
+target_link_libraries(Pico2_UAC2_USBDDC_VerFinal_11FFT_NoOverSampling 
         hardware_pio 
         tinyusb_device
         pico_multicore
@@ -100,9 +100,9 @@ target_link_libraries(Pico2_UAC2_USBDDC
         pico_unique_id
 )
 
-pico_set_float_implementation(Pico2_UAC2_USBDDC pico_vfp)
+pico_set_float_implementation(Pico2_UAC2_USBDDC_VerFinal_11FFT_NoOverSampling pico_vfp)
 
-target_link_options(Pico2_UAC2_USBDDC PRIVATE
+target_link_options(Pico2_UAC2_USBDDC_VerFinal_11FFT_NoOverSampling PRIVATE
         -flto
         "LINKER:-u,__wrap_printf"
         "LINKER:-u,__wrap_puts"
@@ -113,4 +113,4 @@ target_link_options(Pico2_UAC2_USBDDC PRIVATE
         "LINKER:-u,__wrap_log10f"
 )
 
-pico_add_extra_outputs(Pico2_UAC2_USBDDC)
+pico_add_extra_outputs(Pico2_UAC2_USBDDC_VerFinal_11FFT_NoOverSampling)

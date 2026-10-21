@@ -1,4 +1,4 @@
-Pico2_UAC2_USBDDC/
+Pico2_UAC2_USBDDC_VerFinal_11FFT_NoOverSampling/
 │
 ├── CMakeLists.txt
 ├── tusb_config.h
@@ -17,7 +17,7 @@ Pico2_UAC2_USBDDC/
 └── usb_descriptors.c
 
 
-Pico2_UAC2_USBDDC/                  ← プロジェクト直下
+Pico2_UAC2_USBDDC_VerFinal_11FFT_NoOverSampling/                  ← プロジェクト直下
 ├─ CMakeLists.txt                       ★ 差し替え（PICO_USBDEV_* 削除、USB_BRINGUP_LEVEL、スタック4KB）
 ├─ pico_sdk_import.cmake                (変更なし)
 ├─ pico_extras_import.cmake             (変更なし)
