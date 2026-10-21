@@ -5,7 +5,7 @@
 - Originally developed for the PICO_AUDIO_PACK environment (RP2040), this firmware has been reworked for Raspberry Pi Pico 2 (RP2350) utilizing TinyUSB UAC2 for USB audio support.
 - It does not support RP2040-based boards.
 - GPIO assignments have been remapped to GP9 / GP10 / GP11 to maintain compatibility with the original PICO_AUDIO_PACK hardware.
-- Additional modifications have been implemented to simplify audio processing and improve compatibility and stability.
+- Firmware for Raspberry Pi Pico 2 (RP2350) featuring an 11-band FFT spectrum display with a Hann window and A-weighting, plus a real-time buffer water-level monitor. It uses TinyUSB UAC2 with asynchronous feedback and does not use oversampling or FIR filtering.
 - Operation has been verified with PCM5100 / PCM5102A on PICO_AUDIO_PACK hardware.
 - **Build Verified**: Raspberry Pi Pico SDK v2.3.1 / Toolchain 15_2_Rel1
 
