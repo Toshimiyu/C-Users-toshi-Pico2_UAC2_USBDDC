@@ -98,7 +98,7 @@ Center frequencies:
 - 22kHz
 
 ### Configuration:
-- FFT_LEN = 1024
+- FFT_LEN = 2048
 - Window Function: **Hann Window**
 - Weighting: **A-Weighting (A特性係数適用)**
 - RingBuffer Water Level Monitoring with Feedback Control
