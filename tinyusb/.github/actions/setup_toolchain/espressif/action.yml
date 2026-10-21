@@ -1,0 +1,48 @@
+name: Setup ESP-IDF Toolchain
+
+inputs:
+  toolchain:
+    description: 'Toolchain name'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set DOCKER_ESP_IDF and ESP_IDF_IMAGE
+      env:
+        TOOLCHAIN: ${{ inputs.toolchain }}
+      run: |
+        DOCKER_ESP_IDF=$HOME/cache/${TOOLCHAIN}/docker_image.tar
+        echo "DOCKER_ESP_IDF=$DOCKER_ESP_IDF" >> $GITHUB_ENV
+        ESP_IDF_IMAGE=$(jq -er '."esp-idf".image' .github/actions/setup_toolchain/toolchain.json)
+        echo "ESP_IDF_IMAGE=$ESP_IDF_IMAGE" >> $GITHUB_ENV
+      shell: bash
+
+    - name: Cache Docker Image
+      uses: actions/cache@v5
+      id: cache-toolchain-espressif
+      with:
+        path: ${{ env.DOCKER_ESP_IDF }}
+        key: ${{ inputs.toolchain }}-${{ env.ESP_IDF_IMAGE }}
+
+    - name: Pull and Save Docker Image
+      if: steps.cache-toolchain-espressif.outputs.cache-hit != 'true'
+      run: |
+        docker pull "$ESP_IDF_IMAGE"
+        mkdir -p $(dirname $DOCKER_ESP_IDF)
+        docker save -o $DOCKER_ESP_IDF "$ESP_IDF_IMAGE"
+        du -sh $DOCKER_ESP_IDF
+      shell: bash
+
+    - name: Load Docker Image
+      if: steps.cache-toolchain-espressif.outputs.cache-hit == 'true'
+      run: |
+        du -sh $DOCKER_ESP_IDF
+        docker load --input $DOCKER_ESP_IDF
+      shell: bash
+
+    - name: Tag Local Image
+      run: |
+        docker tag "$ESP_IDF_IMAGE" espressif/idf:tinyusb
+        docker images
+      shell: bash

@@ -1,0 +1,67 @@
+Pico2_UAC2_USBDDC/
+│
+├── CMakeLists.txt
+├── tusb_config.h
+├── pico_sdk_import.cmake
+│
+└── src/
+├── main.c
+├── audio_ringbuf.h
+├── audio_ringbuf.c
+├── uac2_callbacks.c
+├── i2s_dma.h
+├── i2s_dma.c
+├── fft_task.h
+├── fft_task.c
+├── usb_descriptors.h
+└── usb_descriptors.c
+
+
+Pico2_UAC2_USBDDC/                  ← プロジェクト直下
+├─ CMakeLists.txt                       ★ 差し替え（PICO_USBDEV_* 削除、USB_BRINGUP_LEVEL、スタック4KB）
+├─ pico_sdk_import.cmake                (変更なし)
+├─ pico_extras_import.cmake             (変更なし)
+├─ example_auto_set_url.cmake           (変更なし)
+├─ pico-extras/                         (変更なし)
+├─ CMSIS/                               (変更なし。Core/ と DSP/)
+├─ lufa/                                ✕ 不要（削除可）
+├─ tinyusb/                             任意（新しい TinyUSB を使う場合のみ）
+├─ tools/
+│   └─ fb_sim.py                        ★ 任意（Feedback 制御のシミュレータ）
+├─ UAC2_Migration_Spec.md               ★ 任意（仕様書）
+└─ src/
+    ├─ CMakeLists.txt                   ★ 差し替え（※元の「CMakeLists_1.txt」を src/ 内で CMakeLists.txt にしたもの）
+    │
+    │  ── USB 周り（新規 / 全面書き換え）──
+    ├─ usb_device_control.c / .h        ★ 全面書き換え（LUFA 排除。PCM 受信・Feedback 制御・状態機械）
+    ├─ uac2_callbacks.c                 ★ 差し替え（元の同名ファイルは使わない）
+    ├─ usb_descriptors.c / .h           ★ 差し替え（UAC2・FS・3 alt）
+    ├─ tusb_config.h                    ★ 差し替え
+    ├─ uac2_compat.h                    ★ 新規（旧 TinyUSB 向けの名前変換）
+    ├─ common_types.h                   (添付のまま)
+    │
+    │  ── 表示 ──
+    ├─ display_rta.c                    ★ 変更（フォーマット文字を縮小しただけ）
+    ├─ debug_gauge.c / .h               ★ 新規（水位ゲージ。DEBUG_GAUGE_ENABLE=0 で無効）
+    ├─ display_rta.h                    (変更なし)
+    ├─ spectrum.c / .h                  (変更なし)
+    │
+    │  ── アプリ本体 ──
+    ├─ main.c                           ★ 変更（boot_wait_ms、usb_audio_task、ゲージ呼び出し、UART 削除）
+    │
+    │  ── 以下すべて変更なし ──
+    ├─ common.h
+    ├─ general_func.c
+    ├─ core1.c
+    ├─ i2s.pio
+    ├─ i2s_pio_interface.c / .h
+    ├─ transmit_to_dac.c / .h
+    ├─ upsampling.c / .h
+    ├─ upsampling_coef.c
+    ├─ fft_fir_core0.c / .h
+    ├─ fft_fir_core1.c / .h
+    ├─ fft_fir_coef.c / .h
+    ├─ ringbuffer.c / .h
+    ├─ ess_specific.c / .h
+    ├─ nonblocking_i2c.c / .h
+    └─ debug_with_gpio.c / .h
