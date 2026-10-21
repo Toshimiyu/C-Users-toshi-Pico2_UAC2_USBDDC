@@ -56,8 +56,9 @@
 // ピークバー・RTAレイアウト パラメーター
 // ===================================================
 #define PEAK_HOLD_US      300000u
-#define PEAK_FALL_SPEED   8     // 50msごとのピークマーカー落下幅（FFT・L/R共通）
+#define PEAK_FALL_SPEED   4     // 50msごとのピークマーカー落下幅（FFT・L/R共通）
 #define METER_PEAK_FALL_SPEED PEAK_FALL_SPEED
+#define RTA_BAR_RELEASE_PIXELS_PER_SEC 100u // バーの下降速度（約1秒で全高を落下）
 #define PEAK_NONE_Y       0xFFFF// ピーク非表示を示す無効値
 
 #define RTA_BAR_W         10
@@ -201,8 +202,9 @@ static uint8_t cur_r_peak = 0;
 static volatile uint8_t input_l_peak = 0;
 static volatile uint8_t input_r_peak = 0;
 
-static uint8_t prev_l_bands[SPECTRUM_BAND_COUNT] = {0};
-static uint8_t prev_r_bands[SPECTRUM_BAND_COUNT] = {0};
+static uint16_t prev_l_bands[SPECTRUM_BAND_COUNT] = {0}; // 描画中バーの高さ(px)
+static uint16_t prev_r_bands[SPECTRUM_BAND_COUNT] = {0};
+static uint32_t bar_last_update_us[2][SPECTRUM_BAND_COUNT] = {{0}};
 static uint16_t prev_l_meter_width = 0;
 static uint16_t prev_r_meter_width = 0;
 static uint16_t peak_l_meter_width = 0;
@@ -463,7 +465,7 @@ uint16_t *last_marker,
 uint16_t normal_color)
 {
 const uint16_t max_w = 284;
-const uint16_t block_w = 8;
+const uint16_t block_w = 2;
 const uint16_t raw_w = (new_val * max_w) / 100;
 const uint16_t prev_w = *prev_width;
 uint16_t new_w = prev_w;
@@ -519,7 +521,7 @@ if (new_w >= *peak_width && new_w > 0) {
 *peak_width = (*peak_width > METER_PEAK_FALL_SPEED)
 ? (uint16_t)(*peak_width - METER_PEAK_FALL_SPEED) : 0;
 if (*peak_width < new_w) *peak_width = new_w;
-*next_fall = now + 50000u;
+*next_fall = now + 25000u;
 }
 
 const uint16_t desired_marker = (*peak_width > 0)
@@ -545,7 +547,8 @@ lcd_fill_rect(23 + desired_marker, y, 1, 4, COLOR_PEAK_DOT);
 static void update_vertical_bar(
 uint16_t x,
 uint8_t new_val,
-uint8_t *prev_val,
+uint16_t *prev_height,
+uint32_t *last_update_us,
 uint8_t *peak_dot,
 uint32_t *hold_until,
 uint32_t *next_fall,
@@ -555,12 +558,28 @@ uint16_t color)
 uint16_t max_h = 98;
 uint16_t y_base = 163;
 
-uint16_t new_h = (new_val * max_h) / 100;
-uint16_t prev_h = (*prev_val * max_h) / 100;
-
 const uint32_t now = time_us_32();
-if (new_h >= *peak_dot && new_h > 0) {
-*peak_dot = new_h;
+const uint16_t target_h = (new_val * max_h) / 100;
+const uint16_t prev_h = *prev_height;
+uint16_t new_h;
+if (target_h >= prev_h) {
+// 上昇は即時反映する。
+new_h = target_h;
+*last_update_us = now;
+} else {
+// 下降は経過時間に比例させ、描画周期に依存しない速度で落とす。
+const uint32_t elapsed_us = now - *last_update_us;
+const uint32_t fall_px = (uint32_t)(((uint64_t)elapsed_us * RTA_BAR_RELEASE_PIXELS_PER_SEC) / 1000000u);
+new_h = prev_h;
+if (fall_px > 0) {
+const uint16_t remaining = prev_h - target_h;
+new_h = (fall_px >= remaining) ? target_h : (uint16_t)(prev_h - fall_px);
+*last_update_us = now;
+}
+}
+
+if (target_h >= *peak_dot && target_h > 0) {
+*peak_dot = target_h;
 *hold_until = now + PEAK_HOLD_US;
 *next_fall = *hold_until;
 } else if (*peak_dot > 0 &&
@@ -571,9 +590,9 @@ if (*peak_dot > PEAK_FALL_SPEED) {
 } else {
 *peak_dot = 0;
 }
-*next_fall = now + 50000u;
+*next_fall = now + 25000u;
 }
-if (*peak_dot < new_h) *peak_dot = new_h;
+if (*peak_dot < target_h) *peak_dot = target_h;
 
 uint16_t new_bar_top = (new_h > 0) ? (y_base - new_h + 1) : (y_base + 1);
 uint16_t new_peak_y = (*peak_dot > 0) ? (y_base - *peak_dot + 1) : PEAK_NONE_Y;
@@ -583,7 +602,7 @@ lcd_fill_rect(x + 1, y_base - new_h + 1, 8, new_h - prev_h, color);
 } else if (new_h < prev_h) {
 lcd_fill_rect(x + 1, y_base - prev_h + 1, 8, prev_h - new_h, COLOR_BG);
 }
-*prev_val = new_val;
+*prev_height = new_h;
 
 const bool marker_visible = new_peak_y != PEAK_NONE_Y &&
 new_peak_y >= 66 && new_peak_y <= 163 &&
@@ -909,10 +928,12 @@ const uint16_t bar_step = 13;
 const uint16_t lx = 10 + band * bar_step;
 const uint16_t rx = 167 + band * bar_step;
 update_vertical_bar(lx, cur_l_bands[band], &prev_l_bands[band],
+&bar_last_update_us[0][band],
 &peak_l_dots[band], &peak_l_hold_until[band],
 &peak_l_next_fall[band],
 &last_l_peak_y[band], COLOR_L_THEME);
 update_vertical_bar(rx, cur_r_bands[band], &prev_r_bands[band],
+&bar_last_update_us[1][band],
 &peak_r_dots[band], &peak_r_hold_until[band],
 &peak_r_next_fall[band],
 &last_r_peak_y[band], COLOR_R_THEME);

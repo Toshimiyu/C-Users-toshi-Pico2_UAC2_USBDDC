@@ -10,7 +10,7 @@
 #include "pico/stdlib.h"
 #include "fft_task.h"
 
-#define FFT_LEN 1024
+#define FFT_LEN 2048
 #define FFT_RING_BUFFER_FRAMES 512
 
 typedef struct {
