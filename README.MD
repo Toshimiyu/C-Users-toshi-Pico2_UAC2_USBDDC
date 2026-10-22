@@ -35,6 +35,15 @@
   Windows側の出力サンプリングレート設定によっては、音切れが発生する組み合わせがあります。
   動作安定性は再生環境や設定によって異なるため、ご確認の上ご使用ください。
 
+## Hardware Photo
+
+### Complete System
+
+![Pico2 UAC2 USB-DDC](images/system_photo_01.png)
+
+Pico2 + Pico Audio Pack (PCM5100A) + Pico Display Pack 2.0
+
+
 ## 表示仕様（Pico Display Pack 2.0）
 ディスプレイ上では、以下のリアルタイム情報およびオーディオビジュアライザーが描画されます。
 - **L/R レベルメーター**: ステレオ音声の音量レベルをリアルタイム表示。
