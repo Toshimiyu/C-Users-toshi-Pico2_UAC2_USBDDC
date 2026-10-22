@@ -65,8 +65,10 @@ Pico2 + Pico Audio Pack (PCM5100A) + Pico Display Pack 2.0
 - PCM、2chステレオ
 - ビット深度・サンプルレート対応表（RP2350 Full-Speed帯域制約に基づく）：
   - **16bit**: 44.1kHz / 48kHz / 88.2kHz / 96kHz / 176.4kHz / 192kHz
-  - **24bit**: 44.1kHz / 48kHz / 88.2kHz / 96kHz *(176.4kHz / 192kHzは対象外：安全に無音動作へ遷移)*
-  - **32bit**: 44.1kHz / 48kHz / 88.2kHz / 96kHz *(176.4kHz / 192kHzは対象外：安全に無音動作へ遷移)*
+  - **24bit**: 44.1kHz / 48kHz / 88.2kHz / 96kHz 
+  - **32bit**: 44.1kHz / 48kHz / 88.2kHz / 96kHz 
+※ 24bitおよび32bitの176.4kHz / 192kHz動作は未確認です。
+※ 非対応または未確認フォーマット受信時の動作については検証中です。
 
 ## I²S出力仕様
 - I²S 32bit PCM Format
