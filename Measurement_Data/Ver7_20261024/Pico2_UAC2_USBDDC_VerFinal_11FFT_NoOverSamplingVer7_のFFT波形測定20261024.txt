@@ -1,0 +1,163 @@
+Pico2_UAC2_USBDDC_VerFinal_11FFT_NoOverSamplingVer7_のFFT波形測定20261024
+
+変更履歴　
+Ver1.
+Pico2側VSYS/GND間にX7R10μF+C0G0.1μF追加、PicoAudioPack側のLDO入力部にX7R10μF+C0G0.1μF追加、LPF定数C2200pF→1200pFへ変更
+
+Ver2.
+PicoAudioPack側のLDO入力部にPLMCAP1μF追加、AVDD/GND間にC0G0.1μF追加、CVDD/GND間にC0G0.1μF追加
+
+Ver3.
+PicoAudioPack側のAVDD/GND間にPLMCAP3.3μF追加
+
+Ver4.
+Pico2側3V3/GND間にX7R3.3μF+C0G0.1μF追加
+PicoAudioPack側のDVDD/GND間にPLMCAP0.1μF追加
+
+ファームウェア
+Pico2UltraHiResUSBDDC_VerFinal(11FFTnos版)
+ソフトウェアオーバーサンプリング解除
+ソフトウェアFIRフィルター解除
+
+Ver5.
+Pico2_BitPerfect_USBDDC_VerFinal_11FFT_NoOverSampling
+#define DEFAULT_GAIN_RATIO (1.00) 設定変更　演算処理無し
+
+Ver6.
+Pico2_BitPerfect_USBDDC_VerFinal_11FFT_NoOverSampling
+#define DEFAULT_GAIN_RATIO (0.80) 設定変更　演算処理無し
+LUFAベース
+
+Ver7.
+Pico2_UAC2_USBDDC_VerFinal_11FFT_NoOverSampling
+#define DEFAULT_GAIN_RATIO (0.80) 設定変更
+オーバーサンプリングコード削除
+FIRコード削除
+ES系のDAC出力コード、i2c出力コード削除
+TinyUSB UAC2ベース
+
+測定条件
+SB-1240改にてループバック測定
+WAVEGENE・WAVESPECTRAを使用(24bit 96KHz)
+RMS-10DB入力時(-3db)　300回平均値 Windows出力100/100　入力59/100
+
+無音時スペクトル（300回平均） 
+100.3Hz -122.43db
+119.4Hz -123.48db
+179.4Hz -125.96db
+200.0Hz -124.24db
+300.3Hz -127.97db
+399.9Hz -126.95db
+500.2Hz -130.51db
+599.9Hz -128.33db
+700.2Hz -129.67db
+750.0Hz -117.53db
+799.8Hz -130.27db
+900.1Hz -132.94db
+999.8Hz -114.70db
+1199.7Hz -136.10db
+1300.0Hz -136.39db
+1500.0Hz -125.03db
+2000.2Hz -121.23db
+2250.0Hz -129.57db
+3000.0Hz -124.19db
+3750.0Hz -134.11db
+3999.8Hz -124.31db
+4500.0Hz -135.69db
+4999.5Hz -126.77db
+5250.0Hz -134.56db
+5499.8Hz -143.20db
+6000.0Hz -125.87db
+6249.8Hz -143.31db
+6750.0Hz -137.38db
+6999.8Hz -127.38db
+7500.0Hz -139.47db
+7999.5Hz -133.03db
+8250.0Hz -139.51db
+9000.0Hz -130.19db
+9999.8Hz -130.64db
+10999.5Hz -131.12db
+12000.0Hz -132.02db
+12999.8Hz -130.59db
+13999.5Hz -130.62db
+14999.3Hz -131.96db
+15999.8Hz -129.91db
+16999.5Hz -132.32db
+17999.3Hz -133.90db
+18999.8Hz -135.43db
+19999.5Hz -134.65db
+20537.8Hz -135.61db
+20999.3Hz -135.47db
+21999.8Hz -135.77db
+22999.5Hz -134.05db
+23999.3Hz -130.02db
+24999.0Hz -134.57db
+25999.5Hz -134.85db
+26999.3Hz -134.67db
+27999.0Hz -135.33db
+29999.3Hz -135.75db
+31998.8Hz -131.26db
+35999.3Hz -137.08db
+36999.0Hz -136.04db
+39999.0Hz -130.42db
+40998.8Hz -136.91db
+43998.8Hz -138.33db
+44998.5Hz -139.08db
+その他帯域  −125dB以下
+
+100Hz RMS-10DB入力時　300回平均値(WeveGene -3db)  
+THD　0.00030% 
+THD+N　0.00563% 
+100.3Hz　-11.28db
+200.0Hz -124.99db
+300.3Hz -119.14db
+399.9Hz -115.84db
+500.2Hz -126.49db
+599.9Hz -129.61db
+700.2Hz -130.28db
+799.8Hz -127.88db
+900.1Hz -132.17db
+999.8Hz -115.71db
+その他帯域  −126 dB以下
+
+1KHz　RMS-10DB入力時　300回平均値(WeveGene -3db)  
+THD　0.00141％ 
+THD+N　0.00508％ 
+999.8Hz -10.65db
+2000.2Hz -109.92db
+3000.0Hz -110.95db
+3999.8Hz -116.19db
+5000.2Hz -122.67db
+6000.0Hz -124.49db
+6999.8Hz -133.36db
+7999.5Hz -121.04db
+9000.0Hz -135.91db
+9999.8Hz -130.05db
+その他帯域  −125dB以下
+
+10KHz　RMS-10DB入力時　300回平均値(WeveGene -3db) 
+THD　0.00988％ 
+THD+N　0.01854％ 
+9999.8Hz -10.67db
+20000.2Hz -89.68db
+30000.0Hz -92.79db
+39999.0Hz -109.39db
+その他帯域  −125dB以下
+
+20KHz　RMS-10DB入力時　300回平均値(WeveGene -3db) 
+THD　0.01585％ 
+THD+N　0.02701％ 
+20000.2Hz -10.75db
+39999.0Hz -84.66db
+その他帯域  −125dB以下
+
+IMD測定　19KHz+20KHz　RMS-10DB入力時 300回平均値(WeveGene -9db)
+THD　0.01040％ 
+THD+N　0.04454％ 
+999.8Hz　-121.09db 
+18000.0Hz　-97.56db 
+18999.8Hz　-16.69db 
+19999.5Hz　-16.76db 
+20999.3Hz　-96.88db
+
+
